@@ -1,21 +1,18 @@
-#import pandas as pd
-from flask import Flask, render_template
+"""Vercel serverless entry point.
 
-import pandas as pd
+Vercel's @vercel/python builder imports the ``app`` object from this module.
+The real application lives in the ``hospital_search`` package under ``src/``;
+this file only wires the import path and exposes the WSGI app.
+"""
 
-app = Flask(__name__)
+from __future__ import annotations
 
-data = {'Nama Rumah Sakit' : ['RS A', 'RS B', 'RS C'], 
-        'Jenis Rumah Sakit': ['RS',  'RSIA', 'RSJ'],
-        'Alamat': ['Jalan-jalan', 'Jalan kayang','Jalangkote']}
+import os
+import sys
 
-df = pd.DataFrame(data)
-#df = pd.read_csv('rumahsakit_medicalclinicid_cleaned.csv')
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(PROJECT_ROOT, "src"))
 
-@app.route('/')
-def index():
-    results_df = df.to_dict(orient='records')
-    return render_template('index.html', results=results_df)
+from hospital_search import create_app  # noqa: E402
 
-#if __name__ == '__main__':
-#   app.run(debug=True)
+app = create_app()
